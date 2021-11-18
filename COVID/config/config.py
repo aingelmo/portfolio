@@ -1,1 +1,0 @@
-conn = 'postgresql://pi:raspberry@192.168.1.7:5432/pi'
