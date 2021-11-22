@@ -1,4 +1,5 @@
 from logging import debug
+from re import template
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
@@ -40,7 +41,7 @@ countries_clean = countries.drop_duplicates()
 countries_clean.reset_index(inplace=True, drop=True)
 
 # Retrieve all posible indicators
-available_indicators = df.columns.tolist()[4:]
+available_indicators = df.columns.tolist()[4:-1]
 
 # Define dictionary for future aggregation
 # Retrieve all indicators that supports the condition
@@ -133,7 +134,8 @@ def update_graph(xaxis_column_name, yaxis_column_name, date_value):
         x=xaxis_column_name,
         y=yaxis_column_name,
         color='continent',
-        hover_name='location'
+        hover_name='location',
+        template='plotly_white'
     )
 
     fig.update_traces(customdata=dff['location'])
@@ -144,7 +146,7 @@ def update_graph(xaxis_column_name, yaxis_column_name, date_value):
 
 
 def create_time_series(dff, title):
-    fig = px.scatter(dff, x='month', y=dff.columns[-1])
+    fig = px.scatter(dff, x='month', y=dff.columns[-1], template='plotly_white')
 
     fig.update_traces(mode='lines+markers')
 
