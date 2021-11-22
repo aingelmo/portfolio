@@ -55,6 +55,8 @@ dict_agg = dict_sum | dict_max
 
 # Group data by months
 df_months = df.groupby(['location', 'month']).agg(dict_agg).reset_index()
+# Append continents list
+df_months = df_months.merge(countries_clean, how='left', on='location')
 
 # Create slider dictionary
 slider_options = {d_key: d_val for d_key, d_val in enumerate(sorted(df['month'].unique()))}
@@ -66,8 +68,11 @@ x = x.round(0)
 # -------------------------------------------------------------------------------------------------
 app.layout = html.Div([
     html.Div([
+        
 
         html.Div([
+            html.H5('x-axis variable'),
+
             dcc.Dropdown(
                 id="dropdown-xaxis",
                 options=[{"label": i, "value": i} for i in available_indicators],
@@ -76,7 +81,11 @@ app.layout = html.Div([
         ],
             style={'width': '49%', 'display': 'inline-block'}),
 
+        
+
         html.Div([
+            html.H5('y-axis variable'),
+
             dcc.Dropdown(
                 id="dropdown-yaxis",
                 options=[{"label": i, "value": i} for i in available_indicators],
@@ -90,7 +99,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(
             id='crossfilter-indicator-scatter',
-            hoverData={'points': [{'customdata': 'Spain'}]}
+            hoverData={'points': [{'hovertext': 'Spain'}]}
         )
     ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
     html.Div([
@@ -123,6 +132,7 @@ def update_graph(xaxis_column_name, yaxis_column_name, date_value):
         data_frame=dff,
         x=xaxis_column_name,
         y=yaxis_column_name,
+        color='continent',
         hover_name='location'
     )
 
@@ -154,11 +164,13 @@ def create_time_series(dff, title):
     [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
      dash.dependencies.Input('dropdown-xaxis', 'value')])
 def update_y_timeseries(hoverData, xaxis_column_name):
-    country_name = hoverData['points'][0]['customdata']
+    country_name = hoverData['points'][0]['hovertext']
     dff = df_months[df_months['location'] == country_name]
     dff = dff[['location', 'month', xaxis_column_name]]
     title = '<b>{}</b><br>{}'.format(country_name, xaxis_column_name)
+    print(hoverData)
     return create_time_series(dff, title)
+
 
 
 @app.callback(
@@ -166,7 +178,7 @@ def update_y_timeseries(hoverData, xaxis_column_name):
     [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
      dash.dependencies.Input('dropdown-yaxis', 'value')])
 def update_x_timeseries(hoverData, yaxis_column_name):
-    dff = df_months[df_months['location'] == hoverData['points'][0]['customdata']]
+    dff = df_months[df_months['location'] == hoverData['points'][0]['hovertext']]
     dff = dff[['location', 'month', yaxis_column_name]]
     return create_time_series(dff, yaxis_column_name)
 
