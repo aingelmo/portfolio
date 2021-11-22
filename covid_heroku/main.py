@@ -43,6 +43,7 @@ countries_clean.reset_index(inplace=True, drop=True)
 
 # Retrieve all posible indicators
 available_indicators = df.columns.tolist()[4:-1]
+available_indicators.remove('tests_units')
 
 # Define dictionary for future aggregation
 # Retrieve all indicators that supports the condition
@@ -73,11 +74,11 @@ app.layout = html.Div([
         
 
         html.Div([
-            html.H5('x-axis variable'),
+            html.H5('Select variable for the x axis'),
 
             dcc.Dropdown(
                 id="dropdown-xaxis",
-                options=[{"label": i, "value": i} for i in available_indicators],
+                options=[{"label": i.replace('_', ' ').title(), "value": i} for i in available_indicators],
                 value='total_cases',
             )
         ],
@@ -86,11 +87,11 @@ app.layout = html.Div([
         
 
         html.Div([
-            html.H5('y-axis variable'),
+            html.H5('Select variable for the y axis'),
 
             dcc.Dropdown(
                 id="dropdown-yaxis",
-                options=[{"label": i, "value": i} for i in available_indicators],
+                options=[{"label": i.replace('_', ' ').title(), "value": i} for i in available_indicators],
                 value='total_deaths',
             )
         ],
