@@ -3,6 +3,7 @@ from re import template
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from dash.html.Title import Title
 import pandas as pd
 import plotly.express as px
 import pandas as pd
@@ -138,9 +139,12 @@ def update_graph(xaxis_column_name, yaxis_column_name, date_value):
         template='plotly_white'
     )
 
-    fig.update_traces(customdata=dff['location'])
+    fig.update_traces(customdata=dff['location'], marker={'size': 12, 'opacity': 0.6, 'line': {'width': 2, 'color': 'DarkSlateGrey'}})
 
     fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+
+    fig.update_xaxes(title=xaxis_column_name.replace('_', ' ').title())
+    fig.update_yaxes(title=yaxis_column_name.replace('_', ' ').title())
 
     return fig
 
@@ -150,13 +154,14 @@ def create_time_series(dff, title):
 
     fig.update_traces(mode='lines+markers')
 
-    fig.update_xaxes(showgrid=False)
+    fig.update_xaxes(showgrid=False, title='Date')
+    fig.update_yaxes(title=dff.columns[-1].replace('_', ' ').title())
 
     fig.add_annotation(x=0, y=0.85, xanchor='left', yanchor='bottom',
                        xref='paper', yref='paper', showarrow=False, align='left',
-                       text=title)
+                       text=title.replace('_', ' ').title(), bgcolor='rgba(255, 255, 255, 0.5)')
 
-    fig.update_layout(height=225, margin={'l': 20, 'b': 30, 'r': 10, 't': 10})
+    fig.update_layout(height=225, margin={'l': 20, 'b': 30, 'r': 10, 't': 10}, yaxis_title=None, xaxis_title=None)
 
     return fig
 
