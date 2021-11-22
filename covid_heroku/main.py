@@ -166,7 +166,7 @@ def create_time_series(dff, title):
 
     return fig
 
-
+# -------------------------------------------------------------------------------------------------
 @app.callback(
     dash.dependencies.Output('x-time-series', 'figure'),
     [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
@@ -179,7 +179,7 @@ def update_y_timeseries(hoverData, xaxis_column_name):
     return create_time_series(dff, title)
 
 
-
+# -------------------------------------------------------------------------------------------------
 @app.callback(
     dash.dependencies.Output('y-time-series', 'figure'),
     [dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
@@ -189,6 +189,6 @@ def update_x_timeseries(hoverData, yaxis_column_name):
     dff = dff[['location', 'month', yaxis_column_name]]
     return create_time_series(dff, yaxis_column_name)
 
-
+# -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run_server(debug=True)
