@@ -94,7 +94,7 @@ app.layout = html.Div([
     html.Div([
         dcc.Graph(
             id='crossfilter-indicator-scatter',
-            hoverData={'points': [{'hovertext': 'Spain'}]}
+            clickData={'points': [{'hovertext': 'Spain'}]}
         )
     ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
 
