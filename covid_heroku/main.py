@@ -77,7 +77,6 @@ app.layout = html.Div([
             style={'width': '49%', 'display': 'inline-block'}),
 
         
-
         html.Div([
             html.H5('Select variable for the y axis'),
 
@@ -86,15 +85,15 @@ app.layout = html.Div([
                 options=[{"label": i.replace('_', ' ').title(), "value": i} for i in available_indicators],
                 value='total_deaths',
             )
-        ],
-            style={'width': '49%', 'float': 'right', 'display': 'inline-block'})
+        ], style={'width': '49%', 'float': 'right', 'display': 'inline-block'})
     ], style={'padding': '10px 5px'}
     ),
+
 
     html.Div([
         dcc.Graph(
             id='crossfilter-indicator-scatter',
-            hoverData={'points': [{'hovertext': 'Spain'}]}
+            clickData={'points': [{'hovertext': 'Spain'}]}
         )
     ], style={'width': '49%', 'display': 'inline-block', 'padding': '0 20'}),
 
@@ -116,25 +115,42 @@ app.layout = html.Div([
             ) 
         ], style={'width': '10%', 'display': 'inline-block', 'padding': '0px 5px'}),
 
+
         html.Div([
             dcc.Slider(
                 id='crossfilter-date-slider'
             )
         ], style={'width': '85%', 'float': 'right', 'display': 'inline-block', 'padding': '7.5px 5px'}),
     ]),
-    dcc.Store(id='memory-output')
+    dcc.Store(id='memory-output-main'),
+    dcc.Store(id='memory-output-secondary')
 ])
 
+
 # -------------------------------------------------------------------------------------------------
+## Return a dataset and save it on memory to perform few calculations on the chart of the left.
 @app.callback(
-    dash.dependencies.Output('memory-output', 'data'),
-    dash.dependencies.Input('time-aggregation-selector', 'value'))
-def filtered_dataframe(date_agg):
+    dash.dependencies.Output('memory-output-main', 'data'),
+    [dash.dependencies.Input('time-aggregation-selector', 'value'),
+     dash.dependencies.Input('crossfilter-date-slider', 'value')])
+def filtered_dataframe(date_agg, date_value):
     dataset = df.groupby(['location', date_agg]).agg(dict_agg).reset_index()
     dataset = dataset.merge(countries_clean, how='left', on='location')
-
+    dataset = dataset[dataset[date_agg] == slider_options[date_value]]
     return dataset.to_dict('records')
 
+
+# -------------------------------------------------------------------------------------------------
+## Return a dataset and save it on memory to perform few calculations on the chart of the right.
+@app.callback(
+    dash.dependencies.Output('memory-output-secondary', 'data'),
+    [dash.dependencies.Input('time-aggregation-selector', 'value'),
+     dash.dependencies.Input('crossfilter-date-slider', 'value')])
+def filtered_dataframe(date_agg, date_value):
+    dataset = df.groupby(['location', date_agg]).agg(dict_agg).reset_index()
+    dataset = dataset.merge(countries_clean, how='left', on='location')
+    dataset = dataset[dataset[date_agg] <= slider_options[date_value]]
+    return dataset.to_dict('records')
 
 
 # -------------------------------------------------------------------------------------------------
@@ -160,24 +176,16 @@ def update_slider(date_agg):
 
     return min, max, value, marks
 
+
 # -------------------------------------------------------------------------------------------------
 @app.callback(
     dash.dependencies.Output('crossfilter-indicator-scatter', 'figure'),
-    [dash.dependencies.Input('memory-output', 'data'),
+    [dash.dependencies.Input('memory-output-main', 'data'),
      dash.dependencies.Input('dropdown-xaxis', 'value'),
-     dash.dependencies.Input('dropdown-yaxis', 'value'),
-     dash.dependencies.Input('crossfilter-date-slider', 'value'),
-     dash.dependencies.Input('time-aggregation-selector', 'value')])
-def update_graph(data, xaxis_column_name, yaxis_column_name, date_value, date_agg):
-    # # Set the dataframe grouped by location and date aggregator (months or quarters)
-    # dff = df.groupby(['location', date_agg]).agg(dict_agg).reset_index()
-    # # Merge it with the clean list of countries to obtain continent
-    # dff = dff.merge(countries_clean, how='left', on='location')
-    
+     dash.dependencies.Input('dropdown-yaxis', 'value')])
+def update_graph(data, xaxis_column_name, yaxis_column_name):
     # Load the dataframe from memory output
     dff = pd.DataFrame(data)
-    # Filter the dataframe by date aggregator and slider value
-    dff = dff[dff[date_agg] == slider_options[date_value]]
 
     # Scatter plot the graph
     fig = px.scatter(
@@ -186,11 +194,12 @@ def update_graph(data, xaxis_column_name, yaxis_column_name, date_value, date_ag
         y=yaxis_column_name,
         color='continent',
         hover_name='location',
-        template='plotly_white'
-    )
-
+        template='plotly_white')
+    # Markers style
     fig.update_traces(customdata=dff['location'], marker={'size': 12, 'opacity': 0.6, 'line': {'width': 2, 'color': 'DarkSlateGrey'}})
+    # Update labels retrieved from hovermode
     fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+    # Update axis titles
     fig.update_xaxes(title=xaxis_column_name.replace('_', ' ').title())
     fig.update_yaxes(title=yaxis_column_name.replace('_', ' ').title())
 
@@ -198,17 +207,17 @@ def update_graph(data, xaxis_column_name, yaxis_column_name, date_value, date_ag
 
 
 def create_time_series(dff, date_agg, title):
+    # Scatter plot the graph with the date always on the x-axis and the variable selected on the y
     fig = px.scatter(dff, x=date_agg, y=dff.columns[-1], template='plotly_white')
-
+    # Markers style
     fig.update_traces(mode='lines+markers')
-
-    fig.update_xaxes(showgrid=False, title='Date')
-    fig.update_yaxes(title=dff.columns[-1].replace('_', ' ').title())
-
+    # Hide grid on the x-axis
+    fig.update_xaxes(showgrid=False)
+    # Add title to the chart
     fig.add_annotation(x=0, y=0.85, xanchor='left', yanchor='bottom',
                        xref='paper', yref='paper', showarrow=False, align='left',
                        text=title.replace('_', ' ').title(), bgcolor='rgba(255, 255, 255, 0.5)')
-
+    # Set height and hide axis titles
     fig.update_layout(height=225, margin={'l': 20, 'b': 30, 'r': 10, 't': 10}, yaxis_title=None, xaxis_title=None)
 
     return fig
@@ -216,25 +225,17 @@ def create_time_series(dff, date_agg, title):
 # -------------------------------------------------------------------------------------------------
 @app.callback(
     dash.dependencies.Output('x-time-series', 'figure'),
-    [dash.dependencies.Input('memory-output', 'data'),
-     dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
+    [dash.dependencies.Input('memory-output-secondary', 'data'),
+     dash.dependencies.Input('crossfilter-indicator-scatter', 'clickData'),
      dash.dependencies.Input('dropdown-xaxis', 'value'),
-     dash.dependencies.Input('crossfilter-date-slider', 'value'),
      dash.dependencies.Input('time-aggregation-selector', 'value')])
-def update_y_timeseries(data, hoverData, xaxis_column_name, date_value, date_agg):
-    # Group the dataset by  location and data ggregation
-    #dff = df.groupby(['location', date_agg]).agg(dict_agg).reset_index()
-
+def update_y_timeseries(data, clickData, xaxis_column_name, date_agg):
     # Load the dataframe from memory output
     dff = pd.DataFrame(data)
-    # Retrieve country name from the data gathered my hover the mouse
-    country_name = hoverData['points'][0]['hovertext']
-    # Filter a dataset with all the data before the date in the slider   
-    dff = dff[dff[date_agg] <= slider_options[date_value]]
-    # Get the country needed
-    dff = dff[dff['location'] == country_name]
-    # Filter the dataset more precisely
-    dff = dff[['location', date_agg, xaxis_column_name]]
+    # Retrieve country name from the data gathered my clicking with the mouse
+    country_name = clickData['points'][0]['hovertext']
+    # Filter the dataset by the country needed
+    dff = dff[dff['location'] == country_name][['location', date_agg, xaxis_column_name]]
     # Set a title    
     title = '<b>{}</b><br>{}'.format(country_name, xaxis_column_name)
     
@@ -244,28 +245,21 @@ def update_y_timeseries(data, hoverData, xaxis_column_name, date_value, date_agg
 # -------------------------------------------------------------------------------------------------
 @app.callback(
     dash.dependencies.Output('y-time-series', 'figure'),
-    [dash.dependencies.Input('memory-output', 'data'),
-     dash.dependencies.Input('crossfilter-indicator-scatter', 'hoverData'),
+    [dash.dependencies.Input('memory-output-secondary', 'data'),
+     dash.dependencies.Input('crossfilter-indicator-scatter', 'clickData'),
      dash.dependencies.Input('dropdown-yaxis', 'value'),
-     dash.dependencies.Input('crossfilter-date-slider', 'value'),
      dash.dependencies.Input('time-aggregation-selector', 'value')])
-def update_x_timeseries(data, hoverData, yaxis_column_name, date_value, date_agg):
-    # Group the dataset by  location and data ggregation
-    #dff = df.groupby(['location', date_agg]).agg(dict_agg).reset_index()
-    
+def update_x_timeseries(data, clickData, yaxis_column_name, date_agg):
     # Load the dataframe from memory output
     dff = pd.DataFrame(data)
     # Retrieve country name from the data gathered my hover the mouse
-    country_name = hoverData['points'][0]['hovertext']
-    # Filter a dataset with all the data before the date in the slider
-    dff = dff[dff[date_agg] <= slider_options[date_value]]
-    # Get the country needed
-    dff = dff[dff['location'] == country_name]
-    # Filter the dataset more precisely
-    dff = dff[['location', date_agg, yaxis_column_name]]
+    country_name = clickData['points'][0]['hovertext']
+    # Filter the dataset by the country needed
+    dff = dff[dff['location'] == country_name][['location', date_agg, yaxis_column_name]]
 
     return create_time_series(dff, date_agg, yaxis_column_name)
-    
+
+
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
     app.run_server(debug=True)
