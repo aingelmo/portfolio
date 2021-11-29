@@ -1,9 +1,5 @@
 # Project 5: Communicate Data Findings
 
-# Usage patterns in Ford Gobike bycicle sharing
-
-## by Andrés Ingelmo Poveda
-
 ## Dataset
 
 The dataset includes 180,000+ observations regarding individual rides made in a bike-sharing system covering the greater San Francisco area during the month of February 2019. The dataset can be found [here](https://video.udacity-data.com/topher/2020/October/5f91cf38_201902-fordgobike-tripdata/201902-fordgobike-tripdata.csv).
