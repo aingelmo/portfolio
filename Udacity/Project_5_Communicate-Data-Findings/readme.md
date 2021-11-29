@@ -1,19 +1,18 @@
 # Usage patterns in Ford Gobike bycicle sharing
-## by Andrés Ingelmo Poveda
 
+## by Andrés Ingelmo Poveda
 
 ## Dataset
 
 The dataset includes 180,000+ observations regarding individual rides made in a bike-sharing system covering the greater San Francisco area during the month of February 2019. The dataset can be found [here](https://video.udacity-data.com/topher/2020/October/5f91cf38_201902-fordgobike-tripdata/201902-fordgobike-tripdata.csv).
 
-
 ## Summary of Findings
 
 The average ride in this bike-sharing system was around 500 seconds (or 8.5 minutes). However, this varied depending on the day of the week, the hour, the user type...
 
-We discovered than most of the users are subscribers, males, born in the 80s and 90s and ride the bike between Monday and Friday at 8 or 9 in the morning or 17 or 18 in the afternoon. However, this is the average user. Longers rides were linked with non-suscribers and weekends. Possibly due to different usages of the bike. Subscribers take the bike during weekdays to commute while customers take the bike on weekends for fun.
+We discovered than most of the users are subscribers, males, born in the 80s and 90s and ride the bike between Monday and Friday at 8 or 9 in the morning or 17 or 18 in the afternoon. However, this is the average user. Longers rides were linked with non-subscribers and weekends. Possibly due to different usages of the bike. Subscribers take the bike during weekdays to commute while customers take the bike on weekends for fun.
 
-Other insightful finding was how the year of birth affected the bike usage. It seems that older people spend more time riding the bike. While this can be related to the fact that old people may ride slower, retirement can also take part into this. The more time they have, the more time they can spend in the bike. 
+Other insightful finding was how the year of birth affected the bike usage. It seems that older people spend more time riding the bike. While this can be related to the fact that old people may ride slower, retirement can also take part into this. The more time they have, the more time they can spend in the bike.
 
 ## Key Insights for Presentation
 
