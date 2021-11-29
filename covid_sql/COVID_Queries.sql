@@ -1,19 +1,39 @@
 -- Get the worst day of the covid total cases
 SELECT
-	t1.location,
-	t1.date,
-	t1.new_cases
+	t1.location AS location,
+	MAX(t1.date) AS date,
+	MAX(t1.new_cases) AS new_cases
 FROM covid_data AS t1
 INNER JOIN (
 	SELECT
 		location,
 		MAX(new_cases) AS new_cases
 	FROM covid_data
-	WHERE new_cases IS NOT null
+	WHERE new_cases IS NOT null AND continent IS NOT null
 	GROUP BY location
 ) AS t2
 	ON t1.location = t2.location AND t1.new_cases = t2.new_cases
 WHERE t1.continent IS NOT null
+GROUP BY t1.location
+ORDER BY new_cases DESC
+
+-- Get the worst day of the covid new cases measured by new cases per million
+SELECT
+	t1.location AS location,
+	MAX(t1.date) AS date,
+	MAX(ROUND(t1.new_cases / population * 1000000)) AS new_cases
+FROM covid_data AS t1
+INNER JOIN (
+	SELECT
+		location,
+		MAX(ROUND(new_cases / population * 1000000)) AS new_cases
+	FROM covid_data
+	WHERE new_cases IS NOT null AND continent IS NOT null
+	GROUP BY location
+) AS t2
+	ON t1.location = t2.location AND t1.new_cases = t2.new_cases
+WHERE t1.continent IS NOT null
+GROUP BY t1.location
 ORDER BY new_cases DESC
 
 -- Get the worst day of the covid in deaths
