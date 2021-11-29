@@ -20,4 +20,8 @@ After installing PostgreSQL, we would need to connect to the Raspberry Pi's serv
 
 ![RP PostgreSQL server](https://i.imgur.com/CsYICYb.png)
 
+### Schedule the script execution in Python
+
+By using WinSCP and Putty SSH, I moved my script `database_connect.py` to my RP and schedule a task with Cron. Everyday at 1:00 AM, it runs the script to get the newest data and update the SQL server so I do not have to worry about it. You may find more information regarding scheduling Tasks with Cron on a RP [here](https://www.raspberrypi.com/documentation/computers/using_linux.html#scheduling-tasks-with-cron).
+
 We are ready now to start writing our queries!

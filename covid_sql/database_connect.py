@@ -27,5 +27,3 @@ if __name__ == '__main__':
 
     downloader()
     engine_sql()
-
-    print(os.getcwd())
