@@ -13,4 +13,4 @@ As the information were not together so I had to combine and clean them with Jup
 
 ## Visualization
 
-The data visualization is built on Tableau. You can check it out here.
+The data visualization is built on Tableau. You can check it out [here](https://public.tableau.com/app/profile/aingelmop/viz/OlympicGamesVisualization/MainDashboard).
