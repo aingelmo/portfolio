@@ -1,4 +1,4 @@
-# COVID dashboard on Heroku
+# COVID dashboard on Plotly Dash running on Heroku
 The purpose of this application is learning to use Dash, Plotly and website deployment. 
 
 ## Dataset
