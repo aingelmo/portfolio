@@ -13,7 +13,7 @@ As the information were not together so I had to combine and clean them with Jup
 
 ## Data Wrangling
 
-The data came from multiple sources so wrangling it was neccesary. There is a notebook in the project `data-wrangling.ipynb` showing all the steps performed to clean and merge the data.
+The data came from multiple sources so wrangling it was neccesary. There is a notebook in the folder called `data-wrangling.ipynb` showing all the steps performed to clean and merge the data.
 
 ## Visualization
 
