@@ -10,6 +10,8 @@ from pandas.core.frame import DataFrame
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import time
+from concurrent.futures import ThreadPoolExecutor
 
 # Deploy from github
 
@@ -27,38 +29,49 @@ server = app.server
 
 # -------------------------------------------------------------------------------------------------
 ### Data loading and cleaning
-# Load COVID-19 database from Our World in Data
-df = pd.read_csv(url)
-# Remove continents group from dataset
-df = df[df['continent'].notnull()]
-# Fill missing values with zeroes
-df.fillna(0, inplace=True)
-# Remove dates where COVID wasnt measured
-df = df[df['date'] > '2020-02-23']
-# Get a year-month column for further analysis
-df['month'] = pd.to_datetime(df['date']).dt.to_period('M').astype('str')
-df['quarter'] = pd.PeriodIndex(pd.to_datetime(df['date']), freq='Q').astype('str')
+def get_data():
+    global df, countries, countries_clean, available_indicators, dict_agg
+    # Load COVID-19 database from Our World in Data
+    df = pd.read_csv(url)
+    # Remove continents group from dataset
+    df = df[df['continent'].notnull()]
+    # Fill missing values with zeroes
+    df.fillna(0, inplace=True)
+    # Remove dates where COVID wasn't measured
+    df = df[df['date'] > '2020-02-23']
+    # Get a year-month column for further analysis
+    df['month'] = pd.to_datetime(df['date']).dt.to_period('M').astype('str')
+    df['quarter'] = pd.PeriodIndex(pd.to_datetime(df['date']), freq='Q').astype('str')
 
-# Get a daframe with the countries and its continent
-countries = df[['location', 'continent']]
-countries_clean = countries.drop_duplicates()
-countries_clean.reset_index(inplace=True, drop=True)
+    # Get a dataframe with the countries and its continent
+    countries = df[['location', 'continent']]
+    countries_clean = countries.drop_duplicates()
+    countries_clean.reset_index(inplace=True, drop=True)
 
-# Retrieve all posible indicators
-available_indicators = df.columns.tolist()[4:-1]
-available_indicators.remove('tests_units')
+    # Retrieve all possible indicators
+    available_indicators = df.columns.tolist()[4:-1]
+    available_indicators.remove('tests_units')
 
-# Define dictionary for future aggregation
-# Retrieve all indicators that supports the condition
-ind_strings = [i for i in df.columns.tolist() if df.dtypes[i] == 'O']
-ind_sum = [i for i in df.columns.tolist() if i[:3] == 'new']
-ind_max = [i for i in available_indicators if (i[:3] != 'new') & (df.dtypes[i] != 'O')]
-# Set aggregations for different dictionaries
-dict_sum = {i: 'sum' for i in ind_sum}
-dict_max = {i: 'max' for i in ind_max}
-# Merge dictionaries
-dict_agg = dict_sum | dict_max
+    # Define dictionary for future aggregation
+    # Retrieve all indicators that supports the condition
+    ind_strings = [i for i in df.columns.tolist() if df.dtypes[i] == 'O']
+    ind_sum = [i for i in df.columns.tolist() if i[:3] == 'new']
+    ind_max = [i for i in available_indicators if (i[:3] != 'new') & (df.dtypes[i] != 'O')]
+    # Set aggregations for different dictionaries
+    dict_sum = {i: 'sum' for i in ind_sum}
+    dict_max = {i: 'max' for i in ind_max}
+    # Merge dictionaries
+    dict_agg = dict_sum | dict_max
 
+### Load the data into the app every 12 hours
+def get_data_interval(period=43200):
+    while True:
+        get_data()
+        time.sleep(period)
+
+# -------------------------------------------------------------------------------------------------
+### Run function first time to get data to begin
+get_data()
 
 # -------------------------------------------------------------------------------------------------
 app.layout = html.Div([
@@ -259,6 +272,9 @@ def update_x_timeseries(data, clickData, yaxis_column_name, date_agg):
 
     return create_time_series(dff, date_agg, yaxis_column_name)
 
+# -------------------------------------------------------------------------------------------------
+executor = ThreadPoolExecutor(max_workers=1)
+executor.submit(get_data_interval)
 
 # -------------------------------------------------------------------------------------------------
 if __name__ == '__main__':
