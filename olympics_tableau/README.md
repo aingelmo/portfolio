@@ -11,6 +11,10 @@ Datasets come from Kaggle:
 
 As the information were not together so I had to combine and clean them with Jupyter Notebook.
 
+## Data Wrangling
+
+The data came from multiple sources so wrangling it was neccesary. There is a notebook in the project showing all the steps performed to clean and merge the data.
+
 ## Visualization
 
 The data visualization is built on Tableau. You can check it out [here](https://public.tableau.com/app/profile/aingelmop/viz/OlympicGamesVisualization/MainDashboard).
