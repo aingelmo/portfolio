@@ -1,4 +1,4 @@
-# Olympic games analysis in Tableau
+# History of the Olympic Games in Tableau
 
 The purpose of this project is to create a dashboard showing the differences between different countries in the history of Olympic Games since 1896 until 2021.
 
