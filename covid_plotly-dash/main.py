@@ -30,7 +30,7 @@ server = app.server
 # -------------------------------------------------------------------------------------------------
 ### Data loading and cleaning
 def get_data():
-    global df, countries, countries_clean, available_indicators, dict_agg
+    global df, countries, countries_clean
     # Load COVID-19 database from Our World in Data
     df = pd.read_csv(url)
     # Remove continents group from dataset
@@ -48,6 +48,8 @@ def get_data():
     countries_clean = countries.drop_duplicates()
     countries_clean.reset_index(inplace=True, drop=True)
 
+def get_indicators():
+    global available_indicators, dict_agg
     # Retrieve all possible indicators
     available_indicators = df.columns.tolist()[4:-1]
     available_indicators.remove('tests_units')
@@ -70,8 +72,9 @@ def get_data_interval(period=43200):
         time.sleep(period)
 
 # -------------------------------------------------------------------------------------------------
-### Run function first time to get data to begin
+### Run function first time to get data to begin and indicators
 get_data()
+get_indicators()
 
 # -------------------------------------------------------------------------------------------------
 app.layout = html.Div([
