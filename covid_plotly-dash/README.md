@@ -27,4 +27,4 @@ It also shows the evolution of the variables in time over the right side.
 
 ## Use
 
-Please, go to [this site](https://aingelmo.github.io/dash) to use the dashboard.
+Please, go to [this site](https://aingelmo.github.io/covid-plotly-dash) to use the dashboard.
