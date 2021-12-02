@@ -17,4 +17,4 @@ The data came from multiple sources so wrangling it was neccesary. There is a no
 
 ## Visualization
 
-The data visualization is built on Tableau. You can check it out [here](https://public.tableau.com/app/profile/aingelmop/viz/OlympicGamesVisualization/MainDashboard).
+The data visualization is built on Tableau. You can check it out on [Tableau Public](https://public.tableau.com/app/profile/aingelmop/viz/OlympicGamesVisualization/MainDashboard).
