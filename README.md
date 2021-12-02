@@ -5,6 +5,6 @@ Hi! Welcome to my portfolio. The purpose of this repo is showing my analytical a
 Some of my best projects are:
 * [COVID dashboard on plotly](https://github.com/aingelmo/portfolio/tree/main/covid_heroku)
 * [Usage patterns in Ford GoBike bicycle sharing - A data visualization approach](https://aingelmo.github.io/blog/bikesharing-data)
-* [Olympic games analysis in Tableau](https://github.com/aingelmo/portfolio/tree/main/olympics_tableau)
+* [History of Olympic Games visualization in Tableau](https://github.com/aingelmo/portfolio/tree/main/olympics_tableau)
 
 Hope you like it!
