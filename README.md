@@ -8,4 +8,4 @@ Some of my best projects are:
 * [COVID-19 | A SQL approach to analyze data](https://github.com/aingelmo/portfolio/tree/main/covid_sql)
 * [History of Olympic Games visualization in Tableau](https://github.com/aingelmo/portfolio/tree/main/olympics_tableau)
 
-Hope you like it!
+Hope you like them!
